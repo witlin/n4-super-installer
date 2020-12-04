@@ -121,4 +121,7 @@ Process Information:
 > Command References   
   secpol.msc<br>
   eventvwr.msc <br>
-  clear-eventlog -logname Security -computername ($env:COMPUTERNAME)  
+
+  ```powershell
+  clear-eventlog -logname Security -computername ($env:COMPUTERNAME)
+  ```
