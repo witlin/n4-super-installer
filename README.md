@@ -7,21 +7,23 @@
 This powershell script automates portions of the installation process for an N4 Supervisor.
 
 ## Directions of use
-1. Follow the Install guide up to step 3, **don't create** the *D:\Controls Software*
+1. Follow the Install guide up to step 3, you do not need to create the *D:\Controls Software* folder
 ![installation guide step 3](assets/readme/step3.png)
 
-2. Copy and paste the **n4-super-installer** folder from your computer to the server instead.
+2. Copy and paste the **n4-super-installer** folder from your computer to the server.
 
 3. Open the Windows Start Menu and type *powershell*, then select Run As Administrator
 ![start menu powershell selection](assets/readme/start-menu-ps.png)
 
 4. Type
-``` 
-cd "<PATH TO FOLDER>\n4-super-installer\scripts" 
+
+```powershell
+cd "<PATH TO FOLDER>\n4-super-installer"
 ```
 
 5. Press **Enter** and type
-```
+
+```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\installer.ps1
 ```
 
