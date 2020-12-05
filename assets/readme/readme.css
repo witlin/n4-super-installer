@@ -1,3 +1,7 @@
-a.btn {
-    width:200px;
+pre {
+    background-color: black!important;
+}
+
+pre code {
+    color: white;
 }

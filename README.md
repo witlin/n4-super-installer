@@ -4,34 +4,52 @@
 <link rel="stylesheet" href="assets/readme/readme.css">
 
 # n4-super-installer
+
+--------------------------
+
 This powershell script automates portions of the installation process for an N4 Supervisor.
 
 ## Directions of use
-1. Follow the Install guide up to step 3, you do not need to create the *D:\Controls Software* folder
-![installation guide step 3](assets/readme/step3.png)
 
-2. Copy and paste the **n4-super-installer** folder from your computer to the server.
+-------------------------
 
-3. Open the Windows Start Menu and type *powershell*, then select Run As Administrator
-![start menu powershell selection](assets/readme/start-menu-ps.png)
 
-4. Type
+1. Open a Remote Desktop Connection with the server<br>
+![rdp prompt](assets/readme/rdp.png)<br><br>
+
+2. Copy and paste the *n4-super-installer* zip file from your computer to the server.
+![copy zip file](assets/readme/copy.png)
+
+3. Unzip the installer on the server's desktop window.
+![unzip folder](assets/readme/unzip.png)
+
+4. Open the Windows Start Menu and type *powershell*, then select Run As Administrator
+![start menu powershell selection](assets/readme/start-menu-ps.png)<br><br>
+
+5. Type
 
 ```powershell
-cd "<PATH TO FOLDER>\n4-super-installer"
+cd "%HOMEPATH%\Desktop\n4-super-installer"
 ```
 
-5. Press **Enter** and type
+6. Press **Enter** and type
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\installer.ps1
 ```
 
-6. Press **Enter** and wait to follow the prompts for the GFX installation setup window, the other software applications will be installed in sequential order. At this point the installer has created the *D:\Controls Software* folder and copied all the contents from the current download folder to where applications should be in.
+7. Press **Enter** and wait to follow the prompts for the software installation setups, which will be installed in sequential order. At this point the installer has created the *D:\Controls Software* folder and copied all the contents from the current download folder to where applications should be in.
+
+8. After all the setups are done the installer will copy the jars into the modules directory, it will copy the license file into its proper folder, and copy the start menu shortcut folders from the installation user directory to the allusersprofile start menu shortcut directory.
+
+9. TODO - Still need to figure out at which point during the EC-Net installation process the nre.properties file is added to the %APPDATA% niagara etc folder.
 
 ![gfx setup window](assets/readme/gfx-setup-window.png)
 <br><br>
 
+## Engineering Notes
+
+------------------------------------------------------------------
 > In eventvwr.msc, we are looking for the process-creation (4688) and process-terminations (4689) events in the Windows event viewer to track the overall install process
 
 <br>The expected output in the event viewer for each setup.exe program this installer runs should look like this:
@@ -116,7 +134,6 @@ Process Information:
 	Creator Process ID:	0x6fc
 	Creator Process Name:	C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
 ```
-7. Run through all the windows for all the software installers, once the installer script is finished you should be ready to commission the new EC-NET instance.
 
 > Command References   
   secpol.msc<br>
