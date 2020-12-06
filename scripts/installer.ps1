@@ -49,28 +49,28 @@ function run-setup {
   $proc = get-process -ProcessName $filterExpression
   log-step -msg $infoBase" Scanning for the setup process"
   Write-Host "Process ID found: "$proc[0].Id
-
+  
+  $eventTime = Get-Date
   while ($proc.Length -gt 0) {
     Start-Sleep -Seconds 3
     $proc = get-process -ProcessName $filterExpression
+    $eventTime = Get-Date
   }
   
   Start-Sleep -s 1
-  $evEnd = Get-EventLog -LogName Security -InstanceId 4689 -Newest 200
+  $evEnd = Get-EventLog -LogName Security -InstanceId 4689 -After $eventTime
   foreach ($ev in $evEnd) {
     $repStrs = $evEnd[0] | Select-Object -Property ReplacementStrings
     $processName = $repStrs.ReplacementStrings[6]
     if ($processName.contains($filterExpression)) {
-      Write-Host $processName
+      $repStrs = $evEnd[0] | Select-Object -Property ReplacementStrings
+      $processID = [convert]::ToInt64($repStrs.ReplacementStrings[5], 16)
+      $processName = $repStrs.ReplacementStrings[6]
+      log-step -msg $infoBase" Windows Event verification"
+      Write-Host "Name: "$processName
+      Write-Host "PID: "$processID
     }
   }
-
-  $repStrs = $evEnd[0] | Select-Object -Property ReplacementStrings
-  $processID = [convert]::ToInt64($repStrs.ReplacementStrings[5], 16)
-  $processName = $repStrs.ReplacementStrings[6]
-  log-step -msg $infoBase" Windows Event verification"
-  Write-Host "Name: "$processName
-  Write-Host "PID: "$processID
 }
 
 # LOGIC
