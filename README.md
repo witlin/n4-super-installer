@@ -5,14 +5,9 @@
 
 # n4-super-installer
 
---------------------------
-
 This powershell script automates portions of the installation process for an N4 Supervisor.
 
 ## Directions of use
-
--------------------------
-
 
 1. Open a Remote Desktop Connection with the server<br>
 ![rdp prompt](assets/readme/rdp.png)<br><br>
@@ -20,21 +15,16 @@ This powershell script automates portions of the installation process for an N4 
 2. Copy and paste the *n4-super-installer* zip file from your computer to the server.
 ![copy zip file](assets/readme/copy.png)
 
-3. Unzip the installer on the server's desktop window.
+3. Unzip the installer on your Windows user's desktop.
 ![unzip folder](assets/readme/unzip.png)
 
 4. Open the Windows Start Menu and type *powershell*, then select Run As Administrator
 ![start menu powershell selection](assets/readme/start-menu-ps.png)<br><br>
 
-5. Type
+5. On the command prompt, type:
 
 ```powershell
-cd "%HOMEPATH%\Desktop\n4-super-installer"
-```
-
-6. Press **Enter** and type
-
-```powershell
+$env:homedrive, $env:homepath, "\Desktop\n4-super-installer" -join "";
 Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\installer.ps1
 ```
 
@@ -49,7 +39,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\installer.ps1
 
 ## Engineering Notes
 
-------------------------------------------------------------------
 > In eventvwr.msc, we are looking for the process-creation (4688) and process-terminations (4689) events in the Windows event viewer to track the overall install process
 
 <br>The expected output in the event viewer for each setup.exe program this installer runs should look like this:
