@@ -32,7 +32,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\installer.ps1
 
 8. After all the setups are done the installer will copy the jars into the modules directory, it will copy the license file into its proper folder, and copy the start menu shortcut folders from the installation user directory to the allusersprofile start menu shortcut directory.
 
-9. TODO - Still need to figure out at which point during the EC-Net installation process the nre.properties file is added to the %APPDATA% niagara etc folder.
+9. TODO - The Support Pack needs to be installed once the workbench has been licensed. The nre.properties file does not get created in ```C:\ProgramData\Niagara4.9\distech\etc``` after the EC-Net install is done, however it does show up in ```C:\Users\User\Niagara4.9\distech\etc``` righ away. We need to finish testing with a valid license to determine how best to work around these issues.
 
 ![gfx setup window](assets/readme/gfx-setup-window.png)
 <br><br>

@@ -115,9 +115,11 @@ else {
     log-step -msg "$infoBase copying script files to $ctrlDir..."
     Copy-Item -Path (Get-Location) -Destination $ctrlDir -Recurse -Force
 
-    ### Start running install setups
+    ### Start running install setups | can't run the Support Pack until the Workbench is licensed.
     foreach ($p in $setupPaths) {
-      run-setup -setupPath $p.FullName -filterExpression *Distech*
+      if($p.Name -ne "Distech Controls EC-NET Support Pack v4.10.20203.1 Setup.exe") {
+        run-setup -setupPath $p.FullName -filterExpression *Distech*
+      }
     }
 
     # variables and constants after install setups
@@ -153,7 +155,7 @@ else {
 
     ## Make all the Distech shortchuts available to all users
     try {    
-      $partialShorcutPath = "Microsoft\Windows\Start\Menu\Programs"
+      $partialShorcutPath = "Microsoft\Windows\Start Menu\Programs"
       $usrShortcutPath = Join-Path -Path $env:APPDATA -ChildPath $partialShorcutPath
       $allUsrShortcutPath = Join-Path -Path $env:AllUSERSPROFILE -ChildPath $partialShorcutPath
       $startMenuShortcutFiles = Get-ChildItem -Path $usrShortcutPath
@@ -171,23 +173,32 @@ else {
     }
 
     ## Edit the nre.properties file
-    try {
-      $partialNrePath = "\Niagara", $majorRev, "\distech\etc\nre.properties" -join ""
-      $absoluteNrePath = Join-Path -Path $env:AllUSERSPROFILE -ChildPath $partialNrePath
+    <#
+      C:\Users\User\Niagara4.9\distech\etc\nre.properties
+      C:\ProgramData\Niagara4.9\distech\etc
+    #>
 
-      Copy-Item -Path $absoluteNrePath -Destination assets -Force
-      Rename-Item -Path assets\nre.properties -NewName "nre_backup.properties"
-      log-step -msg $infoBase" backed-up nre.properties to .\assets\nre_backup.properties"
-  
-      log-step -msg $infoBase" scanning nre.properties"
-      Get-Content -Path $absoluteNrePath
-  
-      (Get-content -Path $absoluteNrePath).Replace("station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx1024M", "station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx2G") |
-      Out-File $absoluteNrePath
-        
-      Get-Content -Path $absoluteNrePath
-    } catch {
-      log-step -msg "$errorBase Failed to edit nre.properties file: $PSItem...!"
+    $partialNrePath = "\Niagara", $majorRev, "\distech\etc\nre.properties" -join ""
+    $absoluteNrePath = Join-Path -Path $env:AllUSERSPROFILE -ChildPath $partialNrePath
+
+    if (Test-Path $absoluteNrePath) {
+      try {
+        Copy-Item -Path $absoluteNrePath -Destination assets -Force -ErrorAction Stop
+        Rename-Item -Path assets\nre.properties -NewName "nre_backup.properties"
+        log-step -msg $infoBase" backed-up nre.properties to .\assets\nre_backup.properties"
+    
+        log-step -msg $infoBase" scanning nre.properties"
+        Get-Content -Path $absoluteNrePath
+    
+        (Get-content -Path $absoluteNrePath).Replace("station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx1024M", "station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx2G") |
+        Out-File $absoluteNrePath
+          
+        Get-Content -Path $absoluteNrePath
+      } catch {
+        log-step -msg "$errorBase Failed to edit nre.properties file: $PSItem...!"
+      }
+    } else {
+      log-step -msg "$errorBase $absoluteNrePath could not be found...!"
     }
 
     ## Set the process tracking audit policy back to default
