@@ -117,10 +117,9 @@ else {
 
     ### Start running install setups | can't run the Support Pack until the Workbench is licensed.
     foreach ($p in $setupPaths) {
-      if($p.Name -ne "Distech Controls EC-NET Support Pack v4.10.20203.1 Setup.exe") {
-        run-setup -setupPath $p.FullName -filterExpression *Distech*
-      }
+      run-setup -setupPath $p.FullName -filterExpression *Distech*
     }
+    run-setup -setupPath $setupPaths[2].FullName -filterExpression *Distech*
 
     # variables and constants after install setups
     $n4Name = ($setupPaths[1].Name -split " ")[($setupPaths[1].Name -split " ").Length - 1]
