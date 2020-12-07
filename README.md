@@ -24,7 +24,7 @@ This powershell script automates portions of the installation process for an N4 
 5. On the command prompt, type:
 
 ```powershell
-$env:homedrive, $env:homepath, "\Desktop\n4-super-installer" -join "";
+cd "$env:homedrive$env:homepath\Desktop\n4-super-installer";
 Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\installer.ps1
 ```
 
