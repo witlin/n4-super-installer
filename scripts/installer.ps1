@@ -24,10 +24,10 @@
 #>
 
 # variables and constants
-$errorBase = "[ERROR] " + (Get-Date -Format "MM/dd/yyyy HH:mm:ss")
-$infoBase = "[INFO] " + (Get-Date -Format "MM/dd/yyyy HH:mm:ss")
-$ctrlDir = "C:\Controls Software"
-$setupPaths = Get-ChildItem -Path .\assets\installers -Filter *.exe 
+$errorBase = "[ERROR] " + (Get-Date -Format "MM/dd/yyyy HH:mm:ss");
+$infoBase = "[INFO] " + (Get-Date -Format "MM/dd/yyyy HH:mm:ss");
+$ctrlDir = "C:\Controls Software";
+$setupPaths = Get-ChildItem -Path .\assets\installers -Filter *.exe; 
 
 # functions
 function log-step {
@@ -68,7 +68,9 @@ function run-setup {
   )
   start-process -filepath $setupPath
   Start-Sleep -s 1
-  $proc = get-process -ProcessName $filterExpression
+  # n4-super-installer\assets\installers\3-NetFx64.exe
+  # n4-super-installer\assets\installers\BonjourPSSetup.exe
+  $proc = get-process -ProcessName $filterExpression 
   log-step -msg "$infoBase Scanning for the setup process"
   Write-Host "Process ID found: "$proc[0].Id
 
@@ -119,12 +121,11 @@ else {
     foreach ($p in $setupPaths) {
       run-setup -setupPath $p.FullName -filterExpression *Distech*
     }
-    run-setup -setupPath $setupPaths[2].FullName -filterExpression *Distech*
 
     # variables and constants after install setups
-    $n4Name = ($setupPaths[1].Name -split " ")[($setupPaths[1].Name -split " ").Length - 1]
-    $n4Version = $n4Name.Trim('v', '.', 'e', 'x', 'e')
-    $majorRev = $n4Version.Substring(0, 3)
+    $n4Name = ($setupPaths[3].Name -split " ")[($setupPaths[3].Name -split " ").Length - 1];
+    $n4Version = $n4Name.Trim('v', '.', 'e', 'x', 'e');
+    $majorRev = $n4Version.Substring(0, 3);
 
     ## Copy license file to the new N4 license folder in the Niagara install directory
     try {
@@ -171,33 +172,42 @@ else {
       log-step -msg "$errorBase Failed to copy shortcuts over: $PSItem...!"
     }
 
-    ## Edit the nre.properties file
+    ## Edit the nre.properties files
     <#
+      C:\Niagara\EC-Net4.9.0.60\defaults\nre.properties
       C:\Users\User\Niagara4.9\distech\etc\nre.properties
       C:\ProgramData\Niagara4.9\distech\etc
     #>
+    try {
+      $partialNrePath = "EC-Net4-", $n4Version, "\defaults\nre.properties" -join "";
+      $absoluteNrePath = Join-Path -Path "C:\Niagara" -ChildPath $partialNrePath;
+      $usrNrePath = Join-Path -Path "$env:homedrive\$env:homepath" -ChildPath "Niagara$majorRev\distech\etc\nre.properties";
+      $allusrNrePath = Join-Path -Path $env:allusersprofile -ChildPath "Niagara$majorRev\distech\etc\nre.properties";
+  
+      if (Test-Path $absoluteNrePath) {
+        try {
+          Copy-Item -Path $absoluteNrePath -Destination assets -Force -ErrorAction Stop
+          Rename-Item -Path assets\nre.properties -NewName "nre_backup.properties"
+          log-step -msg $infoBase" backed-up nre.properties to .\assets\nre_backup.properties"
+      
+          log-step -msg $infoBase" scanning nre.properties"
+          Get-Content -Path $absoluteNrePath
+      
+          (Get-content -Path $absoluteNrePath).Replace("station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx1024M", "station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx2G") |
+          Out-File $absoluteNrePath
 
-    $partialNrePath = "\Niagara", $majorRev, "\distech\etc\nre.properties" -join ""
-    $absoluteNrePath = Join-Path -Path $env:AllUSERSPROFILE -ChildPath $partialNrePath
-
-    if (Test-Path $absoluteNrePath) {
-      try {
-        Copy-Item -Path $absoluteNrePath -Destination assets -Force -ErrorAction Stop
-        Rename-Item -Path assets\nre.properties -NewName "nre_backup.properties"
-        log-step -msg $infoBase" backed-up nre.properties to .\assets\nre_backup.properties"
-    
-        log-step -msg $infoBase" scanning nre.properties"
-        Get-Content -Path $absoluteNrePath
-    
-        (Get-content -Path $absoluteNrePath).Replace("station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx1024M", "station.java.options=-Dfile.encoding=UTF-8 -Xss512K -Xmx2G") |
-        Out-File $absoluteNrePath
-          
-        Get-Content -Path $absoluteNrePath
-      } catch {
-        log-step -msg "$errorBase Failed to edit nre.properties file: $PSItem...!"
+          Copy-Item -Path $absoluteNrePath -Destination $usrNrePath -Force
+          Copy-Item -Path $absoluteNrePath -Destination $allusrNrePath -Force
+            
+          Get-Content -Path $absoluteNrePath
+        } catch {
+          log-step -msg "$errorBase Failed to edit nre.properties file: $PSItem...!"
+        }
+      } else {
+        log-step -msg "$errorBase $absoluteNrePath could not be found...!"
       }
-    } else {
-      log-step -msg "$errorBase $absoluteNrePath could not be found...!"
+    } catch {
+      log-step -msg "$errorBase failed to edit $absoluteNrePath - $PSItem"
     }
 
     ## Set the process tracking audit policy back to default

@@ -5,7 +5,7 @@
 
 # n4-super-installer
 
-This powershell script automates portions of the installation process for an N4 Supervisor.
+This powershell script automates most of the installation process for an N4 Supervisor.
 
 ## Directions of use
 
@@ -33,7 +33,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\installer.ps1
 8. After all the setups are done the installer will copy the jars into the modules directory, it will copy the license file into its proper folder, and copy the start menu shortcut folders from the installation user directory to the allusersprofile start menu shortcut directory.
 
 9. The Support Pack needs to be installed twice on hosts not already running .NET2 
-10. The nre.properties file does not get created in ```C:\ProgramData\Niagara4.9\distech\etc``` after the EC-Net install is done, however it does show up in ```C:\Users\User\Niagara4.9\distech\etc``` righ away. We need to finish testing with a valid license to determine how best to work around these issues.
+10. The nre.properties file does not get created in ```C:\ProgramData\Niagara4.9\distech\etc``` after the EC-Net install is done, however it does show up in ```C:\Users\User\Niagara4.9\distech\etc``` right away. We need to finish testing with a valid license to determine how best to work around these issues.
 
 ![gfx setup window](assets/readme/gfx-setup-window.png)
 <br><br>
