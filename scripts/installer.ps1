@@ -119,7 +119,7 @@ else {
 
     ### Start running install setups | can't run the Support Pack until the Workbench is licensed.
     foreach ($p in $setupPaths) {
-      run-setup -setupPath $p.FullName -filterExpression *Distech*, *NetFx64*, *Bonjour*
+      run-setup -setupPath $p.FullName -filterExpression *Distech*, *2-*, *Bonjour*
     }
 
     # variables and constants after install setups
