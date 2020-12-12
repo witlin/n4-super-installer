@@ -64,13 +64,13 @@ function audit-process {
 function run-setup {
   param (
     [Parameter(Mandatory = $true)] [string] $setupPath,
-    [Parameter(Mandatory = $true)] [string] $filterExpression
+    [Parameter(Mandatory = $true)] [string[]] $filterExpression
   )
   start-process -filepath $setupPath
   Start-Sleep -s 1
   # n4-super-installer\assets\installers\3-NetFx64.exe
   # n4-super-installer\assets\installers\BonjourPSSetup.exe
-  $proc = get-process -ProcessName $filterExpression 
+  $proc = get-process -Name $filterExpression 
   log-step -msg "$infoBase Scanning for the setup process"
   Write-Host "Process ID found: "$proc[0].Id
 
@@ -119,7 +119,7 @@ else {
 
     ### Start running install setups | can't run the Support Pack until the Workbench is licensed.
     foreach ($p in $setupPaths) {
-      run-setup -setupPath $p.FullName -filterExpression *Distech*
+      run-setup -setupPath $p.FullName -filterExpression *Distech*, *NetFx64*, *Bonjour*
     }
 
     # variables and constants after install setups
